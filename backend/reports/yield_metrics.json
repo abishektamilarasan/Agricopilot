@@ -1,0 +1,65 @@
+{
+  "linear_regression": {
+    "train": {
+      "mae": 8.7987,
+      "rmse": 10.8148,
+      "r2": 0.71,
+      "n_samples": 1400
+    },
+    "val": {
+      "mae": 8.7706,
+      "rmse": 10.6238,
+      "r2": 0.7206,
+      "n_samples": 300
+    },
+    "test": {
+      "mae": 8.7741,
+      "rmse": 10.7535,
+      "r2": 0.7284,
+      "n_samples": 300
+    },
+    "training_time_s": 0.0
+  },
+  "random_forest": {
+    "train": {
+      "mae": 1.1517,
+      "rmse": 2.1426,
+      "r2": 0.9886,
+      "n_samples": 1400
+    },
+    "val": {
+      "mae": 2.3189,
+      "rmse": 4.0097,
+      "r2": 0.9602,
+      "n_samples": 300
+    },
+    "test": {
+      "mae": 2.5727,
+      "rmse": 4.5092,
+      "r2": 0.9522,
+      "n_samples": 300
+    },
+    "training_time_s": 0.31
+  },
+  "xgboost": {
+    "train": {
+      "mae": 0.0533,
+      "rmse": 0.0778,
+      "r2": 1.0,
+      "n_samples": 1400
+    },
+    "val": {
+      "mae": 2.1715,
+      "rmse": 3.6476,
+      "r2": 0.9671,
+      "n_samples": 300
+    },
+    "test": {
+      "mae": 2.33,
+      "rmse": 3.9559,
+      "r2": 0.9632,
+      "n_samples": 300
+    },
+    "training_time_s": 0.87
+  }
+}

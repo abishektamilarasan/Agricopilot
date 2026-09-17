@@ -1,0 +1,15 @@
+**/.git
+**/.gitignore
+**/node_modules
+**/.next
+**/venv
+**/venv_old
+**/venv_gpu
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache
+**/.coverage
+**/reports/*.png
+**/reports/*.jpg

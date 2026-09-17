@@ -1,0 +1,35 @@
+# AgriCopilot - Backend Dependencies
+# Core
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+python-dotenv==1.0.1
+httpx==0.28.1
+
+# AI & RAG
+ollama==0.4.7
+chromadb==0.6.3
+
+# CORS
+python-multipart==0.0.20
+
+# Data processing & Scientific Computing
+numpy==2.2.1
+pandas==2.2.3
+scikit-learn==1.5.2
+
+# Web Search & External APIs
+# tavily-python package is optional; httpx handles the requests directly
+
+# Time-Series Forecasting (optional but recommended)
+# prophet==1.1.6  # Facebook Prophet (lightweight)
+# statsmodels==0.14.2  # ARIMA, exponential smoothing
+
+# Geospatial & Environmental Data
+# requests-oauthlib==2.0.0  # For API auth if needed
+
+# Testing & Code Quality
+flake8==7.1.1
+
+# Type Checking
+mypy==1.11.2

@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: agricopilot-backend
+    ports:
+      - "8000:8000"
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      LLM_MODEL: mistral
+      EMBEDDING_MODEL: nomic-embed-text
+      CHROMA_PERSIST_DIR: /app/chroma_db
+      DEBUG: "False"
+      LOG_LEVEL: INFO
+    volumes:
+      - ./backend/chroma_db:/app/chroma_db
+      - ./backend/logs:/app/logs
+    depends_on:
+      - ollama
+      - chroma
+    networks:
+      - agricopilot-net
+    restart: unless-stopped
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: agricopilot-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - agricopilot-net
+    restart: unless-stopped
+
+  # Ollama LLM Service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: agricopilot-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - agricopilot-net
+    restart: unless-stopped
+    # Note: Pull models manually:
+    # docker exec agricopilot-ollama ollama pull mistral
+    # docker exec agricopilot-ollama ollama pull nomic-embed-text
+
+  # ChromaDB Vector Store
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: agricopilot-chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma-data:/chroma/data
+    networks:
+      - agricopilot-net
+    restart: unless-stopped
+    environment:
+      IS_PERSISTENT: "true"
+      PERSIST_DIRECTORY: /chroma/data
+
+networks:
+  agricopilot-net:
+    driver: bridge
+
+volumes:
+  ollama-data:
+  chroma-data:
