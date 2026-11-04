@@ -3,6 +3,7 @@
 [![Next.js](https://img.shields.io/badge/Frontend-Next.js%2016-black?logo=next.js)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![PyTorch](https://img.shields.io/badge/Deep%20Learning-PyTorch-EE4C2C?logo=pytorch)](https://pytorch.org/)
+[![Hugging Face Models](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-yellow)](https://huggingface.co/abishektamilarasan)
 [![XGBoost](https://img.shields.io/badge/ML-XGBoost-blue)](https://xgboost.readthedocs.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -75,10 +76,9 @@
 ├── frontend/                 # Next.js 16 UI (Tailwind CSS, Leaflet maps, Chart.js)
 │   ├── app/                  # Application pages (Command Center, Doctor, ML Lab, Chat)
 │   └── components/           # Reusable UI cards and visualization components
-├── backend/                  # FastAPI microservices & ML inference engine
-│   ├── api/                  # REST endpoints (/copilot, /vision, /ml, /weather)
+├── backend/                  # FastAPI microservices & REST endpoints
+│   ├── api/                  # REST routers (/copilot, /vision, /ml, /weather)
 │   ├── data_sources/         # Handlers for Open-Meteo, SoilGrids, Sentinel-2, Agmarknet
-│   ├── ml/                   # Model architectures, Grad-CAM, SHAP, and checkpoints
 │   └── rag/                  # ChromaDB vector store and TNAU agronomy documents
 ├── AgriCopilot_IEEE_Report.pdf # Full research paper & benchmark report
 └── README.md                 # Project documentation and quickstart

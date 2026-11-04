@@ -1,10 +1,19 @@
+# ──────────────────────────────────────────────────────────
+# AgriCopilot — .gitignore
+# ──────────────────────────────────────────────────────────
+
 # Virtual Environments
 backend/venv/
+backend/venv_old/
 venv/
+venv_old/
 env/
-.env
 
-# Python Cache
+# Secrets
+.env
+.env.local
+
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
@@ -24,40 +33,61 @@ var/
 wheels/
 share/python-wheels/
 
-# Databases & Large Data
+# ChromaDB vector store (auto-rebuilt at startup)
 backend/chroma_db/
+chroma_db/
+
+# SQLite databases
 *.sqlite3
 *.db
 
-# Node / Frontend
+# Node / Frontend build artifacts
 frontend/node_modules/
+node_modules/
 frontend/.next/
+.next/
 frontend/out/
 frontend/build/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# OS Files
+# OS files
 .DS_Store
 Thumbs.db
 
-# ML Checkpoints and Datasets
-backend/ml/checkpoints/
+# ── Deep-learning checkpoints (hosted on Hugging Face) ────
 *.pt
 *.pth
 *.h5
 *.onnx
 
-# Datasets
+# ── Legacy / training-only model artifacts ────────────────
+# Production inference uses .joblib files only
+*.pkl
+*.npy
+
+# ── Training datasets & large CSVs ───────────────────────
 ML_dataset/
+PlantVillage/
+Crop Diseases/
+crop_production.csv
 *.csv
 
-# Exclude extra markdown documentation files (keeping only README.md)
+# ── Extra root-level markdown docs ───────────────────────
+# (keep only README.md and frontend/README.md)
 *.md
 !README.md
+!frontend/README.md
 
-# Allow documentation and UI preview assets
+# ── Allow documentation image assets ─────────────────────
 !docs/assets/*.jpg
 !docs/assets/*.png
 !docs/assets/*.jpeg
+
+# ── Misc temporary files ──────────────────────────────────
+check_out.txt
+extracted_report_text.txt
+inspect_soil.py
+update.py
+verify_implementation.sh

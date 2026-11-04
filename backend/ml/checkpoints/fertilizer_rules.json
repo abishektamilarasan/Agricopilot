@@ -1,0 +1,35 @@
+{
+  "0": {
+    "status": "Low Fertility / Nutrient Deficient",
+    "action": "Immediate soil conditioning and targeted macronutrient enrichment required.",
+    "recommendations": {
+      "urea_kg_ha": 120,
+      "dap_kg_ha": 80,
+      "mop_kg_ha": 50,
+      "biofertilizer": "Azospirillum + Phosphobacteria (2 kg/ha)",
+      "micronutrients": "Foliar spray of 0.5% Zinc Sulphate + 0.2% Borax"
+    }
+  },
+  "1": {
+    "status": "Optimal / Fertile Soil",
+    "action": "Maintain soil organic carbon and balanced maintenance fertilization.",
+    "recommendations": {
+      "urea_kg_ha": 60,
+      "dap_kg_ha": 40,
+      "mop_kg_ha": 30,
+      "biofertilizer": "VAM (Vesicular Arbuscular Mycorrhiza) 10 kg/ha",
+      "organic_manure": "Farmyard Manure (FYM) 5 tonnes/ha"
+    }
+  },
+  "2": {
+    "status": "Highly Fertile / Rich Organic Horizon",
+    "action": "Reduce synthetic NPK to prevent salt accumulation; focus on bio-inputs.",
+    "recommendations": {
+      "urea_kg_ha": 25,
+      "dap_kg_ha": 15,
+      "mop_kg_ha": 15,
+      "organic_manure": "Vermicompost 2 tonnes/ha",
+      "micronutrients": "Only need-based application after leaf tissue test"
+    }
+  }
+}
