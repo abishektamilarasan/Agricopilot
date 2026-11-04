@@ -1,15 +1,3 @@
-"""
-EfficientNetV2-B0 Plant Disease Classification Model
-
-Transfer learning wrapper around torchvision's EfficientNetV2-B0 pretrained
-on ImageNet. The classifier head is replaced with a custom head for the
-5-class crop disease problem.
-
-Architecture:
-    EfficientNetV2-B0 backbone (frozen initially, fine-tuned later)
-    → AdaptiveAvgPool → Dropout(0.3) → Linear(1280, 256) → ReLU → Dropout(0.2)
-    → Linear(256, NUM_CLASSES)
-"""
 
 import torch
 import torch.nn as nn

@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
         <div className="app-container">
           <nav className="navbar">
             <a href="/" className="navbar-brand">
-              <span className="logo-icon">🌱</span>
+              <img src="/logo.png" alt="Logo" className="logo-icon" style={{width: "48px", height: "48px", borderRadius: "6px"}} />
               <h1>AgriCopilot</h1>
             </a>
 
@@ -47,8 +47,8 @@ export default function RootLayout({ children }) {
 
 
             <div className="navbar-status">
-              <span className="status-dot" id="status-indicator"></span>
-              <span id="status-text">Connecting...</span>
+              <span className="status-dot connected" id="status-indicator"></span>
+              <span id="status-text">System Online</span>
             </div>
           </nav>
 

@@ -18,7 +18,7 @@
       "r2": 0.7284,
       "n_samples": 300
     },
-    "training_time_s": 0.0
+    "training_time_s": 0.01
   },
   "random_forest": {
     "train": {
@@ -39,7 +39,7 @@
       "r2": 0.9522,
       "n_samples": 300
     },
-    "training_time_s": 0.31
+    "training_time_s": 0.28
   },
   "xgboost": {
     "train": {
@@ -60,6 +60,6 @@
       "r2": 0.9632,
       "n_samples": 300
     },
-    "training_time_s": 0.87
+    "training_time_s": 0.74
   }
 }

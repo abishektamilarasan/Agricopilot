@@ -4,9 +4,9 @@ Central configuration for all services, APIs, and model settings.
 """
 
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+load_dotenv(find_dotenv(usecwd=True))
 
 
 class Settings:
@@ -17,8 +17,6 @@ class Settings:
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     GROQ_MODEL: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
     
-    # --- Ollama Fallback ---
-    OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
     LLM_MODEL: str = os.getenv("LLM_MODEL", "mistral")
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "nomic-embed-text")
 

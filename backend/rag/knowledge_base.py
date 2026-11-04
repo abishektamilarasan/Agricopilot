@@ -1,7 +1,7 @@
 """
 RAG Knowledge Base
 ChromaDB-backed vector store for agricultural knowledge retrieval.
-Uses Ollama's nomic-embed-text for embeddings.
+Uses Chroma's DefaultEmbeddingFunction.
 """
 
 import os
@@ -19,10 +19,7 @@ class AgriKnowledgeBase:
         self.client = chromadb.PersistentClient(path=settings.CHROMA_PERSIST_DIR)
         
         # Use Ollama for embeddings to avoid downloading default models
-        self.embedding_fn = embedding_functions.OllamaEmbeddingFunction(
-            url=settings.OLLAMA_HOST + "/api/embeddings",
-            model_name=settings.EMBEDDING_MODEL
-        )
+        self.embedding_fn = embedding_functions.DefaultEmbeddingFunction()
         
         self.collection = self.client.get_or_create_collection(
             name="agri_knowledge",

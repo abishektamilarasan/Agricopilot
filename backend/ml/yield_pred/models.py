@@ -209,8 +209,8 @@ class YieldModelRegistry:
         return {
             "predicted_yield_tons_ha": round(y_pred, 3),
             "conformal_interval": {
-                "lower": round(interval[0], 3),
-                "upper": round(interval[1], 3),
+                "lower": round(float(interval[0]), 3),
+                "upper": round(float(interval[1]), 3),
                 "coverage": f"{int((1 - alpha) * 100)}%",
                 "alpha": alpha,
             },

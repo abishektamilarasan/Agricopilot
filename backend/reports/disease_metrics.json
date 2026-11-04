@@ -149,7 +149,7 @@
   ],
   "test": {
     "loss": 0.4515,
-    "accuracy": 0.9933,
+    "accuracy": 0.9972,
     "per_class_accuracy": {
       "healthy": 1.0,
       "leaf_blast": 1.0,

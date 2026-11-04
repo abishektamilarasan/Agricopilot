@@ -9,7 +9,6 @@ import asyncio
 from datetime import datetime
 import httpx
 
-import ollama as ollama_client
 
 from config import settings
 from models.schemas import (
@@ -191,21 +190,10 @@ async def _call_llm_for_analysis(prompt: str) -> list[Recommendation]:
         except Exception as e:
             print(f"[Copilot] Groq API error: {e}, falling back to local Ollama...")
 
-    # 2. Fallback to local Ollama
+    # 2. No API Key Fallback
     if raw is None:
-        try:
-            response = ollama_client.chat(
-                model=settings.LLM_MODEL,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": prompt},
-                ],
-                options={"temperature": 0.3, "num_predict": 4096},
-            )
-            raw = response["message"]["content"]
-        except Exception as e:
-            print(f"[Copilot] Ollama LLM error: {e}")
-            return []
+        print("[Copilot] Groq API Key missing or request failed.")
+        return []
 
     return _parse_recommendations(raw)
 
@@ -236,20 +224,8 @@ async def _call_llm_chat(prompt: str) -> str:
         except Exception as e:
             print(f"[Copilot] Groq chat error: {e}, falling back to local Ollama...")
 
-    # 2. Fallback to local Ollama
-    try:
-        response = ollama_client.chat(
-            model=settings.LLM_MODEL,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": prompt},
-            ],
-            options={"temperature": 0.5, "num_predict": 2048},
-        )
-        return response["message"]["content"]
-    except Exception as e:
-        print(f"[Copilot] LLM chat error: {e}")
-        return "N/A: the language model is currently unavailable."
+    # 2. No API Key Fallback
+    return "The AI Copilot requires an API key to function. Please add your Groq API Key to the backend `.env` file."
 
 
 

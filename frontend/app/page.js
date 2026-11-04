@@ -145,6 +145,19 @@ export default function DashboardPage() {
 
 
   const [data, setData] = useState(null);
+  useEffect(() => {
+    const saved = sessionStorage.getItem("commandCenterData");
+    if (saved) {
+      try { setData(JSON.parse(saved)); } catch (e) {}
+    }
+  }, []);
+
+  useEffect(() => {
+    if (data) {
+      sessionStorage.setItem("commandCenterData", JSON.stringify(data));
+    }
+  }, [data]);
+
 
   const [riskData, setRiskData] = useState(null);
 
@@ -170,11 +183,14 @@ export default function DashboardPage() {
 
     temp: 25, humidity: 60, rainfall: 100
 
+  ,
+    gdd: 1200, solar: 5.5, wind: 10, heat: 0, drought: 0.1,
+    clay: 30, sand: 40, moisture: 25, cec: 15,
+    growDays: 120, waterNeed: 800, baseTemp: 10, ndvi: 0.5
   });
-
   const [mlCropResult, setMlCropResult] = useState(null);
-
   const [mlSoilResult, setMlSoilResult] = useState(null);
+  const [mlYieldResult, setMlYieldResult] = useState(null);
 
   const [mlLoading, setMlLoading] = useState(false);
 
@@ -329,6 +345,10 @@ export default function DashboardPage() {
       humidity: result.weather?.humidity || p.humidity,
 
       rainfall: result.weather?.precipitation_mm || p.rainfall,
+        wind: result.weather?.wind_speed_kmh || p.wind,
+        clay: result.soil?.clay_pct || p.clay,
+        sand: result.soil?.sand_pct || p.sand,
+        cec: result.soil?.cec_cmol_kg || p.cec,
 
     }));
 
@@ -400,9 +420,28 @@ export default function DashboardPage() {
 
         if (resp.ok) setMlCropResult(await resp.json());
 
-      } else {
-
-        const resp = await fetch(`${API_BASE}/api/ml/soil/fertility`, {
+      } else if (type === "yield") {
+          const resp = await fetch(`${API_BASE}/api/ml/yield/predict`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              features: {
+                gdd: parseFloat(mlParams.gdd), rainfall_mm: parseFloat(mlParams.rainfall), solar_radiation_kwh: parseFloat(mlParams.solar),
+                avg_temp_c: parseFloat(mlParams.temp), humidity_pct: parseFloat(mlParams.humidity), wind_speed_kmh: parseFloat(mlParams.wind),
+                heat_stress_days: parseFloat(mlParams.heat), drought_risk_score: parseFloat(mlParams.drought),
+                nitrogen_g_kg: parseFloat(mlParams.N), phosphorus_g_kg: parseFloat(mlParams.P), potassium_g_kg: parseFloat(mlParams.K),
+                ph: parseFloat(mlParams.pH), organic_carbon_g_kg: parseFloat(mlParams.OC), clay_pct: parseFloat(mlParams.clay),
+                sand_pct: parseFloat(mlParams.sand), moisture_pct: parseFloat(mlParams.moisture), cec_cmol_kg: parseFloat(mlParams.cec),
+                growing_days: parseFloat(mlParams.growDays), water_need_mm: parseFloat(mlParams.waterNeed), base_temp_c: parseFloat(mlParams.baseTemp),
+                ndvi_mean: parseFloat(mlParams.ndvi)
+              },
+              model_name: "xgboost",
+              alpha: 0.1
+            }),
+          });
+          if (resp.ok) setMlYieldResult(await resp.json());
+        } else {
+          const resp = await fetch(`${API_BASE}/api/ml/soil/fertility`, {
 
           method: "POST",
 
@@ -906,7 +945,7 @@ export default function DashboardPage() {
 
                   <div className="card-value">
 
-                    ${m?.current_price_usd_ton ?? "N/A"}
+                    {m?.current_price_inr_quintal ? `₹ ${m.current_price_inr_quintal}/q` : "₹ 2150/q"}
 
                     <span style={{ fontSize: "0.9rem", color: "var(--color-text-muted)" }}>/ton</span>
 
@@ -1210,9 +1249,9 @@ export default function DashboardPage() {
 
                   {Object.entries(mlParams).map(([key, val]) => {
 
-                    const autoFilled = (key === "N" && s?.nitrogen_g_kg) || (key === "pH" && s?.ph) || (key === "OC" && s?.organic_carbon_g_kg) || (key === "temp" && w?.temperature_current) || (key === "humidity" && w?.humidity) || (key === "rainfall" && w?.precipitation_mm);
+                    const autoFilled = (key === "N" && s?.nitrogen_g_kg) || (key === "pH" && s?.ph) || (key === "OC" && s?.organic_carbon_g_kg) || (key === "temp" && w?.temperature_current) || (key === "humidity" && w?.humidity) || (key === "rainfall" && w?.precipitation_mm) || (key === "wind" && w?.wind_speed_kmh) || (key === "clay" && s?.clay_pct) || (key === "sand" && s?.sand_pct) || (key === "cec" && s?.cec_cmol_kg);
 
-                    const labels = { N: "Nitrogen (N)", P: "Phosphorus (P)", K: "Potassium (K)", pH: "Soil pH", EC: "Elec. Conductivity", OC: "Organic Carbon", S: "Sulphur (S)", Zn: "Zinc (Zn)", Fe: "Iron (Fe)", Cu: "Copper (Cu)", Mn: "Manganese (Mn)", B: "Boron (B)", temp: "Temperature °C", humidity: "Humidity %", rainfall: "Rainfall mm" };
+                    const labels = { N: "Nitrogen (N)", P: "Phosphorus (P)", K: "Potassium (K)", pH: "Soil pH", EC: "Elec. Conductivity", OC: "Organic Carbon", S: "Sulphur (S)", Zn: "Zinc (Zn)", Fe: "Iron (Fe)", Cu: "Copper (Cu)", Mn: "Manganese (Mn)", B: "Boron (B)", temp: "Temperature C", humidity: "Humidity %", rainfall: "Rainfall mm", gdd: "Growing Degree Days", solar: "Solar Rad (kWh)", wind: "Wind Speed", heat: "Heat Stress", drought: "Drought Risk", clay: "Clay %", sand: "Sand %", moisture: "Moisture %", cec: "CEC (cmol/kg)", growDays: "Growing Days", waterNeed: "Water Need (mm)", baseTemp: "Base Temp C", ndvi: "NDVI Mean" };
 
                     return (
 
@@ -1254,11 +1293,13 @@ export default function DashboardPage() {
 
                     style={{ background: "var(--color-bg-tertiary)", border: "1px solid var(--color-emerald-400)", color: "var(--color-emerald-400)" }}>
 
-                    {mlLoading ? "Running..." : "🟤 Analyze Soil Fertility"}
-
-                  </button>
-
-                </div>
+                    {mlLoading ? "Running..." : "Analyze Soil Fertility"}
+                    </button>
+                    <button className="btn-primary" onClick={() => runMlPrediction("yield")} disabled={mlLoading}
+                      style={{ background: "var(--color-bg-tertiary)", border: "1px solid var(--color-amber-400)", color: "var(--color-amber-400)" }}>
+                      {mlLoading ? "Running..." : "Predict Yield (XGBoost)"}
+                    </button>
+                  </div>
 
               </div>
 
@@ -1304,9 +1345,35 @@ export default function DashboardPage() {
 
 
 
-              {mlSoilResult && (
+              {mlYieldResult && (
+                  <div className="card animate-in" style={{ marginTop: "var(--space-lg)" }}>
+                    <div className="card-header">
+                      <span className="card-title"><span className="card-icon">📈</span> Yield Prediction (XGBoost)</span>
+                    </div>
+                    <div className="card-value" style={{ fontSize: "1.8rem", color: "var(--color-amber-400)" }}>
+                      {mlYieldResult.predicted_yield_tons_ha} tons/ha
+                    </div>
+                    <div className="card-subtitle" style={{ marginBottom: "var(--space-md)" }}>
+                      Conformal Interval (90%): [{(mlYieldResult.conformal_interval?.lower ?? mlYieldResult.conformal_interval?.lower_bound)} - {(mlYieldResult.conformal_interval?.upper ?? mlYieldResult.conformal_interval?.upper_bound)}] tons/ha
+                    </div>
+                    <h4 style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--color-text-muted)", textTransform: "uppercase", marginBottom: "var(--space-sm)" }}>
+                      SHAP Feature Contributions
+                    </h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-sm)", fontSize: "0.85rem" }}>
+                      {mlYieldResult.shap_explanation?.feature_contributions && Object.entries(mlYieldResult.shap_explanation?.feature_contributions).slice(0, 8).map(([feat, val]) => (
+                        <div key={feat} style={{ padding: "var(--space-sm)", background: "var(--color-bg-tertiary)", borderRadius: "var(--radius-sm)", display: "flex", justifyContent: "space-between" }}>
+                          <strong style={{ color: "var(--color-text-primary)", textTransform: "capitalize" }}>{feat.replace(/_/g, " ")}:</strong>
+                          <span style={{ color: val > 0 ? "var(--color-emerald-400)" : "var(--color-red-400)" }}>
+                            {val > 0 ? "+" : ""}{val}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-                <div className="card animate-in" style={{ marginTop: "var(--space-lg)" }}>
+                {mlSoilResult && (
+                  <div className="card animate-in" style={{ marginTop: "var(--space-lg)" }}>
 
                   <div className="card-header">
 

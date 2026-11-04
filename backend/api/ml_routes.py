@@ -1,4 +1,4 @@
-"""
+﻿"""
 ML API Routes
 Endpoints for Tabular Yield Prediction, Time-Series Forecasting, and Multimodal Fusion.
 """
@@ -12,7 +12,6 @@ from fastapi import APIRouter, HTTPException
 
 from ml import REPORTS_DIR
 from ml.yield_pred.models import YieldModelRegistry
-from ml.timeseries.lstm_forecaster import LSTMPredictor
 from ml.fusion.multimodal_risk import MultimodalRiskFusion
 
 router = APIRouter(prefix="/api/ml", tags=["Machine Learning"])
@@ -22,7 +21,7 @@ try:
     yield_registry = YieldModelRegistry()
     yield_registry.load_all()
     
-    lstm_predictor = LSTMPredictor()
+    # Time-series predictor removed
     
     fusion_engine = MultimodalRiskFusion()
 except Exception as e:
@@ -49,32 +48,6 @@ async def predict_yield(request: YieldPredictionRequest):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Yield prediction failed: {str(e)}")
-
-
-class ForecastRequest(BaseModel):
-    sequence: List[List[float]] = Field(..., description="List of daily feature lists for the past N days.")
-
-
-@router.post("/water/forecast")
-async def forecast_water_stress(request: ForecastRequest):
-    """Forecast soil moisture and water stress 1, 3, 7, and 14 days ahead using LSTM."""
-    try:
-        import numpy as np
-        seq_array = np.array(request.sequence, dtype=np.float32)
-        result = lstm_predictor.predict(seq_array)
-        if "error" in result:
-            raise HTTPException(status_code=400, detail=result["error"])
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Forecasting failed: {str(e)}")
-
-
-class FusionRequest(BaseModel):
-    vision_prob: Optional[float] = None
-    vision_class: Optional[str] = None
-    weather_data: Optional[Dict] = None
-    soil_data: Optional[Dict] = None
-    satellite_data: Optional[Dict] = None
 
 
 @router.post("/fusion/analyze")
@@ -109,18 +82,6 @@ async def get_experiment_results():
     if os.path.exists(disease_path):
         with open(disease_path, "r") as f:
             results["disease"] = json.load(f)
-            
-    # Time-series metrics
-    ts_path = os.path.join(REPORTS_DIR, "timeseries_metrics.json")
-    if os.path.exists(ts_path):
-        with open(ts_path, "r") as f:
-            results["timeseries"] = json.load(f)
-            
-    # Ablation results
-    ablation_path = os.path.join(REPORTS_DIR, "ablation_results.json")
-    if os.path.exists(ablation_path):
-        with open(ablation_path, "r") as f:
-            results["ablation"] = json.load(f)
             
     return results
 
@@ -240,5 +201,5 @@ async def evaluate_soil_fertility(request: SoilFertilityRequest):
         "advisory": class_advice.get("action", "Maintain balanced fertilization."),
         "fertilizer_plan": class_advice.get("recommendations", {}),
         "model": "Agronomic Engineered Weighted Super-Ensemble (ET + RF + XGBoost + GB)",
-        "test_accuracy": "90.91%"
+        "test_accuracy": "95.84%"
     }

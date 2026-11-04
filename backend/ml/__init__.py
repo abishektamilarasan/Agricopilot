@@ -5,7 +5,6 @@ Real trained ML/CV models for precision agriculture decision support.
 Sub-packages:
     disease   — EfficientNetV2 plant disease classification + Grad-CAM
     yield_pred — Tabular yield prediction (LR, RF, XGBoost) + SHAP + Conformal
-    timeseries — LSTM soil-moisture / water-stress forecasting
     fusion    — Multimodal disease-risk fusion + ablation study
 """
 

@@ -41,7 +41,7 @@ async def lifespan(app: FastAPI):
     print("  AgriCopilot - Agricultural AI Decision Intelligence")
     print("=" * 60)
     print(f"  LLM Model: {settings.LLM_MODEL}")
-    print(f"  Ollama Host: {settings.OLLAMA_HOST}")
+    
     print(f"  ChromaDB: {settings.CHROMA_PERSIST_DIR}")
     print("=" * 60)
 
@@ -88,20 +88,15 @@ app.include_router(risk_dashboard_router)
 @app.get("/api/health")
 async def health_check():
     """System health check."""
-    ollama_status = "unknown"
-    try:
-        import ollama
-        ollama.list()
-        ollama_status = "connected"
-    except Exception:
-        ollama_status = "disconnected"
+    
+    
 
     return {
         "status": "healthy",
         "service": "AgriCopilot API",
         "version": "1.0.0",
         "timestamp": datetime.now().isoformat(),
-        "ollama": ollama_status,
+        
         "llm_model": settings.LLM_MODEL,
         "supported_crops": list(settings.SUPPORTED_CROPS.keys()),
     }

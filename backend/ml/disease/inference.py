@@ -81,24 +81,41 @@ class DiseasePredictor:
         class_json = class_json_path or os.path.join(CHECKPOINTS_DIR, "plantvillage_classes.json")
         if os.path.isfile(class_json):
             with open(class_json, "r") as f:
-                self.class_names = json.load(f)
-                
+                raw_classes = json.load(f)
+            if isinstance(raw_classes, dict):
+                self.idx_to_class = {int(k): v for k, v in raw_classes.items()}
+                self.class_names = [self.idx_to_class[i] for i in range(len(self.idx_to_class))]
+            else:
+                self.class_names = raw_classes
+                self.idx_to_class = {i: c for i, c in enumerate(self.class_names)}
         self.num_classes = len(self.class_names)
-        self.idx_to_class = {i: c for i, c in enumerate(self.class_names)}
-        
+
         # Load model
         from torchvision import models
         weights = models.EfficientNet_V2_S_Weights.DEFAULT if not os.path.isfile(self.checkpoint_path) else None
         self.model = models.efficientnet_v2_s(weights=weights)
         in_features = self.model.classifier[1].in_features
-        self.model.classifier = torch.nn.Sequential(
-            torch.nn.Dropout(p=0.3, inplace=True),
-            torch.nn.Linear(in_features, 512),
-            torch.nn.BatchNorm1d(512),
-            torch.nn.SiLU(inplace=True),
-            torch.nn.Dropout(p=0.2),
-            torch.nn.Linear(512, self.num_classes)
-        )
+        is_indian = False
+        if os.path.isfile(self.checkpoint_path):
+            sd_c = torch.load(self.checkpoint_path, map_location='cpu', weights_only=False)
+            sd_check = sd_c.get('model_state_dict', sd_c)
+            if any('classifier.1.1.' in k for k in sd_check.keys()):
+                is_indian = True
+
+        if is_indian:
+            self.model.classifier[1] = torch.nn.Sequential(
+                torch.nn.Dropout(p=0.2),
+                torch.nn.Linear(in_features, self.num_classes)
+            )
+        else:
+            self.model.classifier = torch.nn.Sequential(
+                torch.nn.Dropout(p=0.3, inplace=True),
+                torch.nn.Linear(in_features, 512),
+                torch.nn.BatchNorm1d(512),
+                torch.nn.SiLU(inplace=True),
+                torch.nn.Dropout(p=0.2),
+                torch.nn.Linear(512, self.num_classes)
+            )
         
         if os.path.isfile(self.checkpoint_path):
             ckpt = torch.load(self.checkpoint_path, map_location=self.device, weights_only=False)

@@ -28,7 +28,7 @@ async def fetch_cultivation_cost(crop: str, field_size_ha: float | None = None) 
         if value is None:
             return CostEstimate(crop=crop, field_size_ha=field_size_ha, source_url=url, note="N/A: the TNAU cost table could not be parsed.")
         return CostEstimate(crop=crop_key, method=method, cost_inr_per_ha=value, field_size_ha=field_size_ha, total_cost_inr=round(value * field_size_ha, 2) if field_size_ha else None, source="TNAU Agritech", source_url=url, note="Published reference cost; not a live input-price quote.")
-    except httpx.HTTPError as error:
+    except Exception as error:
         print(f"[Cost] TNAU retrieval failed: {error}")
         return CostEstimate(crop=crop, field_size_ha=field_size_ha, source_url=url, note="N/A: TNAU source unavailable.")
 

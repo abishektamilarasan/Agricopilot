@@ -52,5 +52,12 @@ backend/ml/checkpoints/
 # Datasets
 ML_dataset/
 *.csv
-*.jpg
-*.png
+
+# Exclude extra markdown documentation files (keeping only README.md)
+*.md
+!README.md
+
+# Allow documentation and UI preview assets
+!docs/assets/*.jpg
+!docs/assets/*.png
+!docs/assets/*.jpeg

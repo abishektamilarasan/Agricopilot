@@ -1,135 +1,127 @@
-# 🌾 AgriCopilot — Agricultural AI Decision Intelligence
+# 🌾 AgriCopilot: Multimodal Precision-Agriculture Decision Support System
 
-> A first-of-its-kind multimodal AI copilot that reasons across weather, soil, satellite, market, and climate data to generate interpretable agricultural recommendations with confidence estimates.
+[![Next.js](https://img.shields.io/badge/Frontend-Next.js%2016-black?logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![PyTorch](https://img.shields.io/badge/Deep%20Learning-PyTorch-EE4C2C?logo=pytorch)](https://pytorch.org/)
+[![XGBoost](https://img.shields.io/badge/ML-XGBoost-blue)](https://xgboost.readthedocs.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-![Python](https://img.shields.io/badge/Python-3.11+-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
-![Next.js](https://img.shields.io/badge/Next.js-15-black)
-![Ollama](https://img.shields.io/badge/Ollama-Local_LLM-orange)
-![Cost](https://img.shields.io/badge/Cost-$0-brightgreen)
+**AgriCopilot** is an explainable, multimodal precision-agriculture platform that unifies 9 heterogeneous agricultural feeds (weather, soil grids, Sentinel-2 NDVI, mandi prices, crop calendars) across 4 AI model families. It integrates **Dempster–Shafer Evidence Theory** for sensor-dropout risk fusion and **Retrieval-Augmented Generation (RAG)** grounded in ICAR/TNAU agricultural advisory manuals.
 
-## 🎯 What Makes This Different
+---
 
-Most agricultural AI systems solve **one** problem (crop disease detection, yield prediction, etc.). AgriCopilot is the first to **reason across all of them together**:
+## 📸 Platform Interface & Dashboards
 
-| Capability | Data Sources | Output |
-|---|---|---|
-| Yield Forecast | Weather + Soil + NDVI | Yield estimate with confidence |
-| Water Stress | Precipitation + ET₀ + Soil Moisture | Irrigation schedule |
-| Disease Risk | Temperature + Humidity + Knowledge Base | Risk alert + treatment |
-| Fertilizer Need | Soil nutrients + Crop requirements | Application plan |
-| Harvest Timing | GDD + Crop phenology + Weather | Optimal harvest window |
-| Market Strategy | Price trends + Profitability | Buy/sell/store advice |
+### 1. Command Center & Telemetry Overview
+*Real-time agronomic telemetry showing Open-Meteo weather forecasts, ISRIC SoilGrids 2.0 chemical profiles, Sentinel-2 NDVI canopy vigor, and live Agmarknet mandi commodity pricing.*
 
-**Research framing:**
-> *"Our multimodal AI decision-support system integrates heterogeneous agricultural data and generates interpretable recommendations with confidence estimates via a retrieval-augmented LLM agent pipeline."*
+![Command Center](docs/assets/command_center.jpg)
 
-## 🏗️ Architecture
+---
 
+### 2. Multimodal Risk Assessment (Dempster–Shafer Fusion)
+*Six-dimensional risk analysis (Drought, Flood, Pest, Disease, Market Crash, Yield Loss) computing explicit Belief–Plausibility intervals and epistemic uncertainty $m(\Theta)$ when sensors or satellite feeds drop out.*
+
+![Risk Engine](docs/assets/risk_engine.jpg)
+
+---
+
+### 3. ML Parameter Input & Crop Recommendation
+*Agronomic parameter override lab featuring the **Soft-Voting Ensemble (Random Forest + XGBoost)** predicting optimal crop choices with confidence distributions across 22 crops (99.55% accuracy).*
+
+![ML Crop Recommendation](docs/assets/ml_crop_recommendation.jpg)
+
+---
+
+### 4. Crop Doctor (Dual-Cascade Vision Classifier)
+*Fine-grained leaf pathology diagnosis powered by cascading **EfficientNetV2-S** models with **Grad-CAM** saliency heatmaps to localize lesion hotspots on leaves.*
+
+![Crop Doctor](docs/assets/crop_doctor.jpg)
+
+---
+
+### 5. Grounded Copilot Chat (RAG)
+*Multi-turn conversational assistant grounded in curated TNAU/ICAR extension handbooks via ChromaDB vector retrieval, dynamically aware of the field's real-time soil, weather, and crop context.*
+
+![Copilot Chat](docs/assets/copilot_chat.jpg)
+
+---
+
+## 🚀 Key Architectural Highlights
+
+- **🔬 Dual-Cascade Crop Doctor (EfficientNetV2-S):**
+  - **Model 1A (Indian Field Conditions):** 17 classes across Rice, Wheat, Corn, Potato, and Sugarcane (**94.82% Accuracy**, 0.945 Macro-F1).
+  - **Model 1B (PlantVillage Lab Benchmark):** 38 pathology classes (**99.49% Accuracy**).
+  - Dynamic cascading: if Model 1A confidence $\ge 0.60$, diagnosis is accepted; otherwise cascades to Model 1B.
+- **🌱 Crop Recommendation Engine:**
+  - Soft-Voting Ensemble (Random Forest + XGBoost) across 22 crops (**99.55% Test Accuracy**).
+- **🧪 Soil Fertility Health Classifier:**
+  - Agronomic Super-Ensemble (ExtraTrees + Random Forest + XGBoost) grading N-P-K and micronutrient health (**95.84% 5-Fold Cross-Validation Accuracy**).
+- **📈 Dual-Tier Yield Regression:**
+  - **Tier A (District-Level):** Trained on 246,000+ empirical records from the Ministry of Agriculture & Farmers Welfare, India ($R^2 = 0.8411$).
+  - **Tier B (Field-Level):** Micro-agronomic regression explained via **TreeSHAP** and calibrated with **Split Conformal Prediction Intervals** ($\pm 6.33\text{ t/ha}$ at 90% confidence).
+- **🛡️ Multimodal Risk Fusion (Dempster–Shafer Theory):**
+  - Sensor-dropout resilience: Missing API feeds or cloud-occluded satellite tiles ($>50\%$) allocate weight to ignorance $m(\Theta)$ rather than using fabricated defaults.
+- **💬 Grounded Agricultural Copilot (RAG):**
+  - ChromaDB vector store querying official TNAU/ICAR guides with real-time field state injection.
+
+---
+
+## 📁 Repository Structure
+
+```text
+├── docs/
+│   └── assets/               # Dashboard screenshots and UI preview images
+├── frontend/                 # Next.js 16 UI (Tailwind CSS, Leaflet maps, Chart.js)
+│   ├── app/                  # Application pages (Command Center, Doctor, ML Lab, Chat)
+│   └── components/           # Reusable UI cards and visualization components
+├── backend/                  # FastAPI microservices & ML inference engine
+│   ├── api/                  # REST endpoints (/copilot, /vision, /ml, /weather)
+│   ├── data_sources/         # Handlers for Open-Meteo, SoilGrids, Sentinel-2, Agmarknet
+│   ├── ml/                   # Model architectures, Grad-CAM, SHAP, and checkpoints
+│   └── rag/                  # ChromaDB vector store and TNAU agronomy documents
+├── AgriCopilot_IEEE_Report.pdf # Full research paper & benchmark report
+└── README.md                 # Project documentation and quickstart
 ```
-Satellite/NDVI ──┐
-Weather API ─────┤
-Soil Data ───────┼──→ FastAPI Backend ──→ RAG Pipeline ──→ Ollama LLM ──→ Recommendations
-NASA POWER ──────┤         │                                                    │
-Market Data ─────┘         └──→ Confidence Engine ──────────────────────────────┘
-                                         │
-                                    Next.js Frontend (Dashboard + Chat + Analytics)
-```
 
-### Tech Stack (100% Free)
+---
 
-| Layer | Technology |
-|---|---|
-| LLM | Ollama + Mistral 7B (local, free) |
-| Vector DB | ChromaDB (local, free) |
-| Backend | FastAPI + Python 3.11+ |
-| Frontend | Next.js 15 + React |
-| Weather | Open-Meteo API (free, no key) |
-| Climate | NASA POWER API (free, no key) |
-| Market | FAOSTAT + curated database |
-| Soil | SoilGrids + regional fallback DB |
-| Vegetation | NDVI simulation engine |
-
-## 🚀 Quick Start
+## ⚡ Quickstart
 
 ### Prerequisites
+- Python 3.10+
+- Node.js 18+ and npm
 
-- **Python 3.11+**
-- **Node.js 18+**
-- **Ollama** — [Install from ollama.com](https://ollama.com)
-
-### 1. Start Ollama & Pull Model
-
+### 1. Backend Setup
 ```bash
-# Install Ollama, then:
-ollama pull mistral
-ollama pull nomic-embed-text
-```
-
-### 2. Start the Backend
-
-```bash
-cd agricopilot/backend
-
-# Create virtual environment
+cd backend
 python -m venv venv
-venv\Scripts\activate        # Windows
-# source venv/bin/activate   # macOS/Linux
 
-# Install dependencies
+# Windows
+venv\Scripts\activate
+# Linux/macOS
+source venv/bin/activate
+
 pip install -r requirements.txt
-
-# Run the server
-python main.py
+python -m uvicorn main:app --reload --port 8000
 ```
+Interactive API Swagger documentation is available at `http://localhost:8000/docs`.
 
-The API will be available at `http://localhost:8000`. Visit `http://localhost:8000/docs` for the interactive Swagger UI.
-
-### 3. Start the Frontend
-
+### 2. Frontend Setup
 ```bash
-cd agricopilot/frontend
-
-# Install dependencies (already done during setup)
+cd frontend
 npm install
-
-# Run dev server
 npm run dev
 ```
+Open `http://localhost:3000` to launch the AgriCopilot dashboard.
 
-Visit `http://localhost:3000` to see the dashboard.
+---
 
-## 📡 API Endpoints
+## 📄 Research Paper
+For complete technical details, benchmarks, and mathematical proofs, refer to:
+- [`AgriCopilot_IEEE_Report.pdf`](AgriCopilot_IEEE_Report.pdf)
 
-| Endpoint | Method | Description |
-|---|---|---|
-| `/api/analyze` | POST | Full agricultural analysis |
-| `/api/chat` | POST | Conversational copilot |
-| `/api/weather/{lat}/{lon}` | GET | Weather data |
-| `/api/soil/{lat}/{lon}` | GET | Soil properties |
-| `/api/market/{crop}/{country}` | GET | Market data |
-| `/api/ndvi/{lat}/{lon}` | GET | Vegetation health |
-| `/api/nasa/{lat}/{lon}` | GET | NASA climate data |
-| `/api/crops` | GET | Supported crops |
-| `/api/health` | GET | System health |
+---
 
-## 🌍 Supported Crops & Regions
-
-**Crops:** Rice, Wheat, Maize, Millet, Soybean
-
-**Regions with data:** India, United States, Nigeria (expandable)
-
-## 🧠 AI Research Areas Covered
-
-- ✅ Multimodal Data Fusion
-- ✅ Retrieval-Augmented Generation (RAG)
-- ✅ LLM-based Reasoning Chains
-- ✅ Confidence Calibration
-- ✅ Explainable AI (source attribution)
-- ✅ Time-Series Analysis
-- ✅ Domain-Specific Knowledge Bases
-- ✅ AI Agents (tool-use orchestration)
-
-## 📝 License
-
-MIT — Free for research and commercial use.
+## 📜 License
+Distributed under the MIT License. See `LICENSE` for more information.

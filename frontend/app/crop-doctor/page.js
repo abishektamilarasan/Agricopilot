@@ -6,7 +6,7 @@ import { useFieldContext } from "../components/FieldContext";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function CropDoctorPage() {
-  const { crop } = useFieldContext();
+  const { crop, setCrop } = useFieldContext();
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);

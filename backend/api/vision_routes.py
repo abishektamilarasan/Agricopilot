@@ -40,20 +40,29 @@ async def diagnose_disease(file: UploadFile = File(...), crop: str = Form(None))
         raise HTTPException(status_code=400, detail="File must be an image.")
 
     indian_crops = ["sugarcane", "wheat", "potato", "corn", "rice"]
-    
-    # Choose predictor based on crop
-    predictor = predictor_pv
-    if crop and crop.lower() in indian_crops and predictor_indian is not None:
-        predictor = predictor_indian
-
-    if predictor is None:
-        raise HTTPException(status_code=500, detail="Vision model failed to initialize.")
-
     try:
         content = await file.read()
-        result = predictor.predict_from_bytes(content, top_k=3)
+        res_pv = predictor_pv.predict_from_bytes(content, top_k=3) if predictor_pv else None
+        res_ind = predictor_indian.predict_from_bytes(content, top_k=3) if predictor_indian else None
+
+        if res_pv and res_ind:
+            conf_pv = res_pv["top_prediction"]["confidence"]
+            conf_ind = res_ind["top_prediction"]["confidence"]
+            # Confidence-first selection: if PlantVillage has high certainty (>80%) for specialized crops like blueberry, apple, grape, tomato, peach, don't force Indian 17-class model
+            if conf_pv >= 0.80 and conf_pv > conf_ind:
+                result = res_pv
+            elif crop and crop.lower() in indian_crops:
+                result = res_ind if conf_ind >= (conf_pv - 0.15) else res_pv
+            else:
+                result = res_pv if conf_pv >= conf_ind else res_ind
+        elif res_pv:
+            result = res_pv
+        elif res_ind:
+            result = res_ind
+        else:
+            raise HTTPException(status_code=500, detail="Vision models failed.")
+
         
-        # Get AI recommendation
         disease_name = result["top_prediction"]["label"]
         crop_name = crop if crop else "the crop"
         prompt = f"The crop '{crop_name}' has been diagnosed with '{disease_name}' with {result['top_prediction']['confidence']*100:.1f}% confidence. Provide a short, actionable, and specific recommendation for treatment and prevention. Use bullet points."
